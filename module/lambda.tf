@@ -59,7 +59,7 @@ resource "aws_lambda_function" "start_rds_lambda_function" {
       "TAG_VALUE" = var.tag.value
     }
   }
-    tags = var.tags
+  tags = var.tags
 
 }
 
@@ -72,14 +72,14 @@ data "archive_file" "start_rds_lambda_zip_file" {
 }
 
 resource "aws_sns_topic_subscription" "start_rds_lambda_subscription" {
-  count = var.rds ? 1 : 0
+  count     = var.rds ? 1 : 0
   topic_arn = aws_sns_topic.start_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.start_rds_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "start_rds_lambda_subscription_permission" {
-  count = var.rds ? 1 : 0
+  count         = var.rds ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.start_rds_lambda_function[0].function_name
@@ -104,26 +104,26 @@ resource "aws_lambda_function" "stop_rds_lambda_function" {
       "TAG_VALUE" = var.tag.value
     }
   }
-    tags = var.tags
+  tags = var.tags
 
 }
 
 data "archive_file" "stop_rds_lambda_zip_file" {
-  count = var.rds ? 1 : 0
+  count       = var.rds ? 1 : 0
   type        = "zip"
   source_file = "${path.module}/src/stop-rds/app.py"
   output_path = "${path.module}/zip/stop-rds.zip"
 }
 
 resource "aws_sns_topic_subscription" "stop_rds_lambda_subscription" {
-  count = var.rds ? 1 : 0
+  count     = var.rds ? 1 : 0
   topic_arn = aws_sns_topic.stop_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.stop_rds_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "stop_rds_lambda_subscription_permission" {
-  count = var.rds ? 1 : 0
+  count         = var.rds ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.stop_rds_lambda_function[0].function_name
@@ -158,15 +158,15 @@ resource "aws_iam_role" "ec2_lambda_iam_role" {
   }
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 
-    tags = var.tags
+  tags = var.tags
 
 }
 
 ## Start
 
 resource "aws_lambda_function" "start_ec2_lambda_function" {
-  count = var.ec2 ? 1 : 0
-  timeout = 20
+  count            = var.ec2 ? 1 : 0
+  timeout          = 20
   function_name    = "start-ec2"
   filename         = data.archive_file.start_ec2_lambda_zip_file[0].output_path
   source_code_hash = data.archive_file.start_ec2_lambda_zip_file[0].output_base64sha256
@@ -179,7 +179,7 @@ resource "aws_lambda_function" "start_ec2_lambda_function" {
       "TAG_VALUE" = var.tag.value
     }
   }
-    tags = var.tags
+  tags = var.tags
 
 }
 
@@ -192,14 +192,14 @@ data "archive_file" "start_ec2_lambda_zip_file" {
 }
 
 resource "aws_sns_topic_subscription" "start_ec2_lambda_subscription" {
-  count = var.ec2 ? 1 : 0
+  count     = var.ec2 ? 1 : 0
   topic_arn = aws_sns_topic.start_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.start_ec2_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "start_ec2_lambda_subscription_permission" {
-  count = var.ec2 ? 1 : 0
+  count         = var.ec2 ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.start_ec2_lambda_function[0].function_name
@@ -210,8 +210,8 @@ resource "aws_lambda_permission" "start_ec2_lambda_subscription_permission" {
 ## Stop
 
 resource "aws_lambda_function" "stop_ec2_lambda_function" {
-  count = var.ec2 ? 1 : 0
-  timeout = 20
+  count            = var.ec2 ? 1 : 0
+  timeout          = 20
   function_name    = "stop-ec2"
   filename         = data.archive_file.stop_ec2_lambda_zip_file[0].output_path
   source_code_hash = data.archive_file.stop_ec2_lambda_zip_file[0].output_base64sha256
@@ -237,14 +237,14 @@ data "archive_file" "stop_ec2_lambda_zip_file" {
 }
 
 resource "aws_sns_topic_subscription" "stop_ec2_lambda_subscription" {
-  count = var.ec2 ? 1 : 0
+  count     = var.ec2 ? 1 : 0
   topic_arn = aws_sns_topic.stop_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.stop_ec2_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "stop_ec2_lambda_subscription_permission" {
-  count = var.ec2 ? 1 : 0
+  count         = var.ec2 ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.stop_ec2_lambda_function[0].function_name
@@ -267,11 +267,11 @@ resource "aws_iam_role" "ecs_lambda_iam_role" {
       Version = "2012-10-17"
       Statement = [
         {
-          Action   = [
-            "ecs:ListClusters", 
-            "ecs:ListServices", 
-            "ecs:DescribeServices", 
-            "ecs:UpdateService", 
+          Action = [
+            "ecs:ListClusters",
+            "ecs:ListServices",
+            "ecs:DescribeServices",
+            "ecs:UpdateService",
           ]
           Effect   = "Allow"
           Resource = "*"
@@ -280,7 +280,7 @@ resource "aws_iam_role" "ecs_lambda_iam_role" {
     })
   }
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
-  tags = var.tags
+  tags               = var.tags
 }
 
 ## Start
@@ -294,6 +294,7 @@ resource "aws_lambda_function" "start_ecs_lambda_function" {
   handler          = "app.lambda_handler"
   role             = aws_iam_role.ecs_lambda_iam_role[0].arn
   runtime          = "python3.8"
+  timeout          = 600
   environment {
     variables = {
       "TAG_KEY"   = var.tag.key
@@ -312,14 +313,14 @@ data "archive_file" "start_ecs_lambda_zip_file" {
 }
 
 resource "aws_sns_topic_subscription" "start_ecs_lambda_subscription" {
-  count = var.ecs ? 1 : 0
+  count     = var.ecs ? 1 : 0
   topic_arn = aws_sns_topic.start_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.start_ecs_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "start_ecs_lambda_subscription_permission" {
-  count = var.ecs ? 1 : 0
+  count         = var.ecs ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.start_ecs_lambda_function[0].function_name
@@ -338,6 +339,7 @@ resource "aws_lambda_function" "stop_ecs_lambda_function" {
   handler          = "app.lambda_handler"
   role             = aws_iam_role.ecs_lambda_iam_role[0].arn
   runtime          = "python3.8"
+  timeout          = 600
   environment {
     variables = {
       "TAG_KEY"   = var.tag.key
@@ -348,21 +350,21 @@ resource "aws_lambda_function" "stop_ecs_lambda_function" {
 }
 
 data "archive_file" "stop_ecs_lambda_zip_file" {
-  count = var.ecs ? 1 : 0
+  count       = var.ecs ? 1 : 0
   type        = "zip"
   source_file = "${path.module}/src/stop-ecs/app.py"
   output_path = "${path.module}/zip/stop-ecs.zip"
 }
 
 resource "aws_sns_topic_subscription" "stop_ecs_lambda_subscription" {
-  count = var.ecs ? 1 : 0
+  count     = var.ecs ? 1 : 0
   topic_arn = aws_sns_topic.stop_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.stop_ecs_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "stop_ecs_lambda_subscription_permission" {
-  count = var.ecs ? 1 : 0
+  count         = var.ecs ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.stop_ecs_lambda_function[0].function_name
@@ -396,12 +398,12 @@ resource "aws_iam_role" "asg_lambda_iam_role" {
     })
   }
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
-  tags = var.tags
-}   
+  tags               = var.tags
+}
 
 ## Start
 resource "aws_lambda_function" "start_asg_lambda_function" {
-  count               = var.asg ? 1 : 0
+  count = var.asg ? 1 : 0
 
   function_name    = "start-asg"
   filename         = data.archive_file.start_asg_lambda_zip_file[0].output_path
@@ -419,7 +421,7 @@ resource "aws_lambda_function" "start_asg_lambda_function" {
 }
 
 data "archive_file" "start_asg_lambda_zip_file" {
-  count               = var.asg ? 1 : 0
+  count = var.asg ? 1 : 0
 
   type        = "zip"
   source_file = "${path.module}/src/start-asg/app.py"
@@ -427,14 +429,14 @@ data "archive_file" "start_asg_lambda_zip_file" {
 }
 
 resource "aws_sns_topic_subscription" "start_asg_lambda_subscription" {
-  count               = var.asg ? 1 : 0
+  count     = var.asg ? 1 : 0
   topic_arn = aws_sns_topic.start_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.start_asg_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "start_asg_lambda_subscription_permission" {
-  count               = var.asg ? 1 : 0
+  count         = var.asg ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.start_asg_lambda_function[0].function_name
@@ -445,7 +447,7 @@ resource "aws_lambda_permission" "start_asg_lambda_subscription_permission" {
 ## Stop
 
 resource "aws_lambda_function" "stop_asg_lambda_function" {
-  count               = var.asg ? 1 : 0
+  count = var.asg ? 1 : 0
 
   function_name    = "stop-asg"
   filename         = data.archive_file.stop_asg_lambda_zip_file[0].output_path
@@ -463,7 +465,7 @@ resource "aws_lambda_function" "stop_asg_lambda_function" {
 }
 
 data "archive_file" "stop_asg_lambda_zip_file" {
-  count               = var.asg ? 1 : 0
+  count = var.asg ? 1 : 0
 
   type        = "zip"
   source_file = "${path.module}/src/stop-asg/app.py"
@@ -471,14 +473,14 @@ data "archive_file" "stop_asg_lambda_zip_file" {
 }
 
 resource "aws_sns_topic_subscription" "stop_asg_lambda_subscription" {
-  count               = var.asg ? 1 : 0
+  count     = var.asg ? 1 : 0
   topic_arn = aws_sns_topic.stop_topic.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.stop_asg_lambda_function[0].arn
 }
 
 resource "aws_lambda_permission" "stop_asg_lambda_subscription_permission" {
-  count               = var.asg ? 1 : 0
+  count         = var.asg ? 1 : 0
   statement_id  = "AllowExecutionFromSNS"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.stop_asg_lambda_function[0].function_name

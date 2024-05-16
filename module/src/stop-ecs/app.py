@@ -21,6 +21,7 @@ def lambda_handler(event, context):
         for service in service_list:
             service_info = client.describe_services(
                 cluster=cluster,
+                maxResults=100,
                 services=[service],
                 include=['TAGS']
             )['services'][0]

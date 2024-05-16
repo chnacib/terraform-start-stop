@@ -1,9 +1,10 @@
 variable "enable" {
-  type = bool
+  type    = bool
+  default = false
 }
 
 variable "manual_endpoint" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -13,9 +14,9 @@ variable "region" {
 
 variable "tag" {
   type = object({
-    key = string
+    key   = string
     value = string
-  }) 
+  })
 }
 
 variable "start_cron" {
@@ -27,26 +28,26 @@ variable "stop_cron" {
 }
 
 variable "asg" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "rds" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "ecs" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "ec2" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
