@@ -61,7 +61,7 @@ resource "aws_sns_topic_policy" "stop_topic_policy" {
 resource "aws_cloudwatch_event_rule" "start_event_rule" {
   name                = "start-event-rule"
   schedule_expression = var.start_cron
-  tags = var.tags
+  tags                = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "start_event_target" {
@@ -75,7 +75,7 @@ resource "aws_cloudwatch_event_target" "start_event_target" {
 resource "aws_cloudwatch_event_rule" "stop_event_rule" {
   name                = "stop-event-rule"
   schedule_expression = var.stop_cron
-  tags = var.tags
+  tags                = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "stop_event_target" {
@@ -90,7 +90,7 @@ resource "aws_cloudwatch_event_target" "stop_event_target" {
 #API Gateway
 
 data "aws_iam_policy_document" "apigateway_assume_role" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
   statement {
     effect = "Allow"
 
@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "apigateway_assume_role" {
 }
 
 resource "aws_iam_role" "api_gateway_allow_sns_role" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   name = "start_stop_api_gateway_allow_sns_role"
 
@@ -123,11 +123,11 @@ resource "aws_iam_role" "api_gateway_allow_sns_role" {
   }
 
   assume_role_policy = data.aws_iam_policy_document.apigateway_assume_role[0].json
-  tags = var.tags
+  tags               = var.tags
 }
 
 resource "aws_api_gateway_rest_api" "api_gateway" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   name           = "api-start-stop"
   api_key_source = "HEADER"
@@ -138,12 +138,12 @@ resource "aws_api_gateway_rest_api" "api_gateway" {
 }
 
 resource "aws_api_gateway_deployment" "api_gateway_deployment" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
-  depends_on = [ 
+  depends_on = [
     aws_api_gateway_integration_response.start_integration_response[0],
-    aws_api_gateway_integration_response.stop_integration_response[0] 
+    aws_api_gateway_integration_response.stop_integration_response[0]
   ]
   lifecycle {
     create_before_destroy = true
@@ -155,23 +155,23 @@ resource "aws_api_gateway_deployment" "api_gateway_deployment" {
 }
 
 resource "aws_api_gateway_stage" "stage" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   deployment_id = aws_api_gateway_deployment.api_gateway_deployment[0].id
   rest_api_id   = aws_api_gateway_rest_api.api_gateway[0].id
   stage_name    = "dev"
-  tags = var.tags
+  tags          = var.tags
 }
 
 resource "aws_api_gateway_api_key" "api_key" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   name = "start-stop-key"
   tags = var.tags
 }
 
 resource "aws_api_gateway_usage_plan" "api_usage" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   name = "start-stop-usage-plan"
 
@@ -181,11 +181,11 @@ resource "aws_api_gateway_usage_plan" "api_usage" {
   }
 
   depends_on = [aws_api_gateway_stage.stage[0]]
-  tags = var.tags
+  tags       = var.tags
 }
 
 resource "aws_api_gateway_usage_plan_key" "api_key_usage_relation" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   key_id        = aws_api_gateway_api_key.api_key[0].id
   key_type      = "API_KEY"
@@ -195,7 +195,7 @@ resource "aws_api_gateway_usage_plan_key" "api_key_usage_relation" {
 # ##Start
 
 resource "aws_api_gateway_resource" "start" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   parent_id   = aws_api_gateway_rest_api.api_gateway[0].root_resource_id
@@ -203,7 +203,7 @@ resource "aws_api_gateway_resource" "start" {
 }
 
 resource "aws_api_gateway_method" "start_method" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id      = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id      = aws_api_gateway_resource.start[0].id
@@ -213,7 +213,7 @@ resource "aws_api_gateway_method" "start_method" {
 }
 
 resource "aws_api_gateway_integration" "start_integration" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id = aws_api_gateway_resource.start[0].id
@@ -235,7 +235,7 @@ resource "aws_api_gateway_integration" "start_integration" {
 }
 
 resource "aws_api_gateway_method_response" "start_response" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id = aws_api_gateway_resource.start[0].id
@@ -244,7 +244,7 @@ resource "aws_api_gateway_method_response" "start_response" {
 }
 
 resource "aws_api_gateway_integration_response" "start_integration_response" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id = aws_api_gateway_resource.start[0].id
@@ -259,7 +259,7 @@ resource "aws_api_gateway_integration_response" "start_integration_response" {
 # ##Stop
 
 resource "aws_api_gateway_resource" "stop" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   parent_id   = aws_api_gateway_rest_api.api_gateway[0].root_resource_id
@@ -267,7 +267,7 @@ resource "aws_api_gateway_resource" "stop" {
 }
 
 resource "aws_api_gateway_method" "stop_method" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id      = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id      = aws_api_gateway_resource.stop[0].id
@@ -277,7 +277,7 @@ resource "aws_api_gateway_method" "stop_method" {
 }
 
 resource "aws_api_gateway_integration" "stop_integration" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id = aws_api_gateway_resource.stop[0].id
@@ -299,7 +299,7 @@ resource "aws_api_gateway_integration" "stop_integration" {
 }
 
 resource "aws_api_gateway_method_response" "stop_response" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id = aws_api_gateway_resource.stop[0].id
@@ -308,7 +308,7 @@ resource "aws_api_gateway_method_response" "stop_response" {
 }
 
 resource "aws_api_gateway_integration_response" "stop_integration_response" {
-  count               = var.manual_endpoint ? 1 : 0
+  count = var.manual_endpoint ? 1 : 0
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway[0].id
   resource_id = aws_api_gateway_resource.stop[0].id

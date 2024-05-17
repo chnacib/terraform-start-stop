@@ -15,12 +15,14 @@ def lambda_handler(event, context):
     for cluster in cluster_list: 
         service_list = client.list_services(
             cluster=cluster,
+            maxResults=100,
             launchType='FARGATE',
         )['serviceArns']
 
         for service in service_list:
             service_info = client.describe_services(
                 cluster=cluster,
+                maxResults=100,
                 services=[service],
                 include=['TAGS']
             )['services'][0]

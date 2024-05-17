@@ -1,8 +1,8 @@
 module "start_stop" {
-  source          = "./module"
+  source = "./module"
 
   region = "us-east-1"
-  
+
   enable          = true
   manual_endpoint = true
 
@@ -10,7 +10,7 @@ module "start_stop" {
   stop_cron  = "cron(0 22 ? * MON-FRI *)"
 
   tag = {
-    key  = "start-stop"
+    key   = "start-stop"
     value = "true"
   }
 
